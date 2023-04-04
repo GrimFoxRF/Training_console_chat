@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Chat.h"
 
+
 void Chat::start()
 {
 	_chatWork = true;
@@ -125,7 +126,7 @@ void Chat::showMainMenu()
 
 	while(!_currentUser && _chatWork)
 	{ 
-		std::cout << "\n1 - Вход в чат\n2 - Регистрация пользователя\n3 - Выход" << std::endl;
+		std::cout << "\n1 - Вход в чат\n2 - Регистрация пользователя\n3 - Выход\n" << std::endl;
 		std::cin >> choice;
 		switch (choice) 
 		{

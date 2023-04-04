@@ -43,8 +43,8 @@ public:
 	void showRegistrationMenu(); // Меню регистрации нового пользователя
 	void showChat(); // Лента чата с пользователями и сообщениями
 	void showChatMenu(); //Меню чата, с выбором действий
-	void showAllUsers();
-	void addMessage();
+	void showAllUsers(); //Показать список пользователей
+	void addMessage(); //Написать сообщение
 
 	std::shared_ptr<User>getCurrentUser() const { return _currentUser; }
 };

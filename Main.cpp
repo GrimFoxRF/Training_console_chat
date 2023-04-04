@@ -13,7 +13,7 @@ int main()
 
 	while (chat.chatWork())
 	{
-		chat.showMainMenu();
+		chat.showMainMenu(); //Главное меню
 		while (chat.getCurrentUser())
 		{
 			chat.showChatMenu();
