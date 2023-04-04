@@ -1,9 +1,11 @@
 #include <iostream>
+#include <Windows.h>
 #include "Chat.h"
 
 int main() 
 {
-	setlocale(LC_ALL, "Russian");
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
 
 	Chat chat; //Чат создан
 
