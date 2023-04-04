@@ -9,11 +9,14 @@ int main()
 
 	chat.start(); 
 
-	while (chat.chatWork()) 
+	while (chat.chatWork())
 	{
-
+		chat.showMainMenu();
+		while (chat.getCurrentUser())
+		{
+			chat.showChatMenu();
+		}
 	}
-
-
+	
 	return 0;
 }
