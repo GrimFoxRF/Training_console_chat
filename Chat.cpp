@@ -48,8 +48,8 @@ void Chat::showLoginMenu()
 
 		if (_currentUser == nullptr)
 		{
-			std::cout << "Неправильно введен логин" << std::endl;
-			std::cout << "Нажмите любую кнопку для повторного ввода или \"0\" для выхода" << std::endl;
+			std::cout << "\nНеправильно введен логин\n" << std::endl;
+			std::cout << "Нажмите любую кнопку для повторного ввода или \"0\" для выхода\n" << std::endl;
 			std::cin >> choice;
 			if (choice == '0')
 			{
@@ -64,8 +64,8 @@ void Chat::showLoginMenu()
 
 			if (pass != _currentUser->getUserPassword())
 			{
-				std::cout << "Неправильно введен пароль" << std::endl;
-				std::cout << "Нажмите любую кнопку для повторного ввода или \"0\" для выхода" << std::endl;
+				std::cout << "\nНеправильно введен пароль\n" << std::endl;
+				std::cout << "Нажмите любую кнопку для повторного ввода или \"0\" для выхода\n" << std::endl;
 				std::cin >> choice;
 				if (choice == '0')
 				{
@@ -125,7 +125,7 @@ void Chat::showMainMenu()
 
 	while(!_currentUser && _chatWork)
 	{ 
-		std::cout << "1 - Вход в чат\n2 - Регистрация пользователя\n3 - Выход" << std::endl;
+		std::cout << "\n1 - Вход в чат\n2 - Регистрация пользователя\n3 - Выход" << std::endl;
 		std::cin >> choice;
 		switch (choice) 
 		{
@@ -143,7 +143,7 @@ void Chat::showMainMenu()
 			}
 			break;
 		case('3'):
-			std::cout << "\n\tВыход" << std::endl;
+			std::cout << "\n\tВыход\n" << std::endl;
 			_chatWork = false;
 			system("pause");
 			break;
@@ -158,21 +158,21 @@ void Chat::showChat()
 	std::string from;
 	std::string to;
 
-	std::cout << "\tЧат\n" << std::endl;
+	std::cout << "\t<Чат>\n" << std::endl;
 
 	for (auto& message : _messages) 
 	{
 		if (_currentUser->getUserLogin() == message.getFrom() || _currentUser->getUserLogin() == message.getTo() || message.getTo() == "all") 
 		{
-			from = (_currentUser->getUserLogin() == message.getFrom() ? "me" : getUserByLogin(message.getFrom())->getUserName());
+			from = (_currentUser->getUserLogin() == message.getFrom() ? "меня" : getUserByLogin(message.getFrom())->getUserName());
 
-			if (message.getTo() == "all" || message.getTo() == "All") 
+			if (message.getTo() == "all") 
 			{ 
-				to = "All"; 
+				to = "all"; 
 			}
 			else 
 			{ 
-				to = _currentUser->getUserLogin() == message.getFrom() ? "me" : getUserByLogin(message.getTo())->getUserName(); 
+				to = _currentUser->getUserLogin() == message.getFrom() ? "мне" : getUserByLogin(message.getTo())->getUserName(); 
 			}
 
 			std::cout << "Сообщение от " << from << " для " << to << std::endl;
@@ -189,7 +189,7 @@ void Chat::showChatMenu()
 
 	while (_currentUser) 
 	{
-		std::cout << "1 - Показать сообщения\n2 - Написать сообщение\n3 - Показать всех пользователей\n4 - Выйти из чата\n" << std::endl;
+		std::cout << "\n1 - Показать сообщения\n2 - Написать сообщение\n3 - Показать всех пользователей\n4 - Выйти из чата\n" << std::endl;
 		
 		std::cin >> choice;
 
@@ -233,20 +233,20 @@ void Chat::addMessage()
 	std::string to;
 	std::string text;
 
-	std::cout << "Введите имя пользователя или All - отпрвить сообщение Всем:" << std::endl;
+	std::cout << "\nВведите имя пользователя или all - отпрвить сообщение Всем:\n" << std::endl;
 	std::cin >> to;
-	std::cout << "Напишите текст сообщения: " << std::endl;
+	std::cout << "\nНапишите текст сообщения: \n" << std::endl;
 	std::cin.ignore();
 	getline(std::cin, text);
 
-	if (!(to == "all" || to == "All" || getUserByName(to))) 
+	if (!(to == "all" || getUserByName(to))) 
 	{
-		std::cout << "Пользователь не найден" << std::endl;
+		std::cout << "\nПользователь не найден\n" << std::endl;
 		return;
 	}
-	if (to == "All" || to == "all") 
+	if (to == "all") 
 	{
-		_messages.push_back(Message(_currentUser->getUserLogin(), "All", text));
+		_messages.push_back(Message(_currentUser->getUserLogin(), "all", text));
 	}
 	else 
 	{
