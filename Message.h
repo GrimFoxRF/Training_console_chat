@@ -1,18 +1,18 @@
 #pragma once
 #include <string>
 
-class Message
+template<typename T>class Message //Шаблонный класс
 {
-	const std::string _from;
-	const std::string _to;
-	const std::string _text;
+	const T _from;
+	const T _to;
+	const T _text;
 
 public:
-	Message(const std::string& from, const std::string& to, const std::string& text) : _from(from), _to(to), _text(text){}
+	Message(const T& from, const T& to, const T& text) : _from(from), _to(to), _text(text){}
 	~Message() = default;
 
-	const std::string& getFrom() const { return _from; }
-	const std::string& getTo() const { return _to; }
-	const std::string& getText() const { return _text; }
+	const T& getFrom() const { return _from; }
+	const T& getTo() const { return _to; }
+	const T& getText() const { return _text; }
 };
 
