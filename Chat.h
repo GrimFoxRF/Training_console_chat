@@ -27,7 +27,7 @@ class Chat
 {
 	bool _chatWork = false;
 	std::vector<User> _users;
-	std::vector<Message> _messages;
+	std::vector<Message<std::string>> _messages;
 	std::shared_ptr<User> _currentUser = nullptr;
 
 	std::shared_ptr<User> getUserByLogin(const std::string& login) const;
@@ -44,8 +44,8 @@ public:
 	void showChat(); // Лента чата с пользователями и сообщениями
 	void showChatMenu(); //Меню чата, с выбором действий
 	void showAllUsers(); //Показать список пользователей
-	void addMessage(); //Написать сообщение
+	void addMessage(); //Добавить сообщение
 
 	std::shared_ptr<User>getCurrentUser() const { return _currentUser; }
+	
 };
-

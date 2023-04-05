@@ -1,4 +1,5 @@
 #include <iostream>
+#include <ctime>
 #include "Chat.h"
 
 
@@ -43,7 +44,8 @@ void Chat::showLoginMenu()
 	while (menu)
 	{
 		std::cout << "\tВведите логин:\n" << std::endl;
-		std::cin >> login;
+		std::cin.ignore();
+		getline(std::cin, login);
 
 		_currentUser = getUserByLogin(login);
 
@@ -61,21 +63,22 @@ void Chat::showLoginMenu()
 		else
 		{
 			std::cout << "\tВведите пароль:\n" << std::endl;
-			std::cin >> pass;
+			std::cin.ignore();
+			getline(std::cin, pass);
 
 			if (pass != _currentUser->getUserPassword())
 			{
 				std::cout << "\nНеправильно введен пароль\n" << std::endl;
 				std::cout << "Нажмите любую кнопку для повторного ввода или \"0\" для выхода\n" << std::endl;
 				std::cin >> choice;
+			
 				if (choice == '0')
 				{
+					_currentUser = nullptr;
 					menu = false;
 					break;
 				}
-				break;
 			}
-			break;
 		}
 	}
 }
@@ -115,7 +118,30 @@ void Chat::showRegistrationMenu()
 		menu = false;
 	}
 }
-
+int getDay()
+{
+	struct tm newtime;
+	time_t now = time(0);
+	localtime_s(&newtime, &now);
+	int day = newtime.tm_mday;
+	return day;
+}
+int getMonth()
+{
+	struct tm newtime;
+	time_t now = time(0);
+	localtime_s(&newtime, &now);
+	int month = 1 + newtime.tm_mon;
+	return month;
+}
+int getYear()
+{
+	struct tm newtime;
+	time_t now = time(0);
+	localtime_s(&newtime, &now);
+	int year = 1900 + newtime.tm_year;
+	return year;
+}
 void Chat::showMainMenu()
 {
 	char choice;
@@ -123,7 +149,7 @@ void Chat::showMainMenu()
 	_currentUser = nullptr;
 
 	std::cout << "\tГлавное Меню\n" << std::endl;
-
+	std::cout << "Дата: " << getDay() << "." << getMonth() << "." << getYear() << std::endl;;
 	while(!_currentUser && _chatWork)
 	{ 
 		std::cout << "\n1 - Вход в чат\n2 - Регистрация пользователя\n3 - Выход\n" << std::endl;
@@ -148,12 +174,31 @@ void Chat::showMainMenu()
 			_chatWork = false;
 			system("pause");
 			break;
+		default:
+			std::cout << "1, 2 или 3" << std::endl;
+			break;
 		}
 		
 	}
 
 }
 
+int getHour()
+{
+	struct tm newtime;
+	time_t now = time(0);
+	localtime_s(&newtime, &now);
+	int hour = newtime.tm_hour;
+	return hour;
+}
+int getMin()
+{
+	struct tm newtime;
+	time_t now = time(0);
+	localtime_s(&newtime, &now);
+	int min = newtime.tm_min;
+	return min;
+}
 void Chat::showChat()
 {
 	std::string from;
@@ -169,15 +214,15 @@ void Chat::showChat()
 
 			if (message.getTo() == "all") 
 			{ 
-				to = "all"; 
+				to = "всех"; 
 			}
 			else 
 			{ 
 				to = _currentUser->getUserLogin() == message.getFrom() ? "мне" : getUserByLogin(message.getTo())->getUserName(); 
 			}
 
-			std::cout << "Сообщение от " << from << " для " << to << std::endl;
-			std::cout << "\"" << message.getText() << "\"" << std::endl;
+			std::cout << "Сообщение от " << from << " для " << to <<": " << std::endl;
+			std::cout <<"("<< getHour() << ":" << getMin()<<") " << "\"" << message.getText() << "\"" << std::endl;
 		}
 	}
 }
@@ -247,11 +292,11 @@ void Chat::addMessage()
 	}
 	if (to == "all") 
 	{
-		_messages.push_back(Message(_currentUser->getUserLogin(), "all", text));
+		_messages.push_back(Message<std::string>(_currentUser->getUserLogin(), "all", text));
 	}
 	else 
 	{
-		_messages.push_back(Message(_currentUser->getUserLogin(), getUserByName(to)->getUserLogin(), text));
+		_messages.push_back(Message<std::string>(_currentUser->getUserLogin(), getUserByName(to)->getUserLogin(), text));
 	}
 }
 
