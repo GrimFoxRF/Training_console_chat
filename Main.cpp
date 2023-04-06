@@ -1,7 +1,6 @@
 #include <iostream>
 #include <Windows.h>
 #include "Chat.h"
-#include "Main.h"
 
 int main() 
 {
