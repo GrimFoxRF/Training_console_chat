@@ -13,7 +13,7 @@ bool Chat::chatWork() const
 	return _chatWork;
 }
 
-std::shared_ptr<User> Chat::getUserByLogin(const std::string& login) const
+std::shared_ptr<User> Chat::getUserByLogin(const std::string& login) const //Проверка массива пользователей на совпадения логина
 {
 	for (auto& user : _users)
 	{
@@ -24,7 +24,7 @@ std::shared_ptr<User> Chat::getUserByLogin(const std::string& login) const
 	return nullptr;
 }
 
-std::shared_ptr<User> Chat::getUserByName(const std::string& name) const
+std::shared_ptr<User> Chat::getUserByName(const std::string& name) const //Проверка массива пользователей на совпадение имени
 {
 	for (auto& user : _users)
 	{
@@ -34,19 +34,19 @@ std::shared_ptr<User> Chat::getUserByName(const std::string& name) const
 	}
 	return nullptr;
 }
-
+//Функция проверки логина и пароля при входе в чат
 void Chat::showLoginMenu()
 {
 	bool menu = true;
 	char choice;
 	std::string login;
-	std::string pass;
+	std::string password;
 	while (menu)
 	{
 		std::cout << "\tВведите логин:\n" << std::endl;
 		std::cin.ignore();
 		getline(std::cin, login);
-
+		
 		_currentUser = getUserByLogin(login);
 
 		if (_currentUser == nullptr)
@@ -63,10 +63,10 @@ void Chat::showLoginMenu()
 		else
 		{
 			std::cout << "\tВведите пароль:\n" << std::endl;
-			std::cin.ignore();
-			getline(std::cin, pass);
+			
+			std::cin >> password;
 
-			if (pass != _currentUser->getUserPassword())
+			if (password != _currentUser->getUserPassword())
 			{
 				std::cout << "\nНеправильно введен пароль\n" << std::endl;
 				std::cout << "Нажмите любую кнопку для повторного ввода или \"0\" для выхода\n" << std::endl;
@@ -74,15 +74,18 @@ void Chat::showLoginMenu()
 			
 				if (choice == '0')
 				{
-					_currentUser = nullptr;
 					menu = false;
 					break;
 				}
+				_currentUser = nullptr;
+				break;
 			}
+			break;
 		}
+		
 	}
 }
-
+//Функция создания нового пользователя запрашивает придумать логин, пароль и имя пользователя и добавляе в конец вектора users
 void Chat::showRegistrationMenu()
 {
 	bool menu = true;
@@ -115,9 +118,11 @@ void Chat::showRegistrationMenu()
 
 		User user = User(login, password, name);
 		_users.push_back(user);
+		
 		menu = false;
 	}
 }
+//функции для отображения даты в главном меню
 int getDay()
 {
 	struct tm newtime;
@@ -142,6 +147,23 @@ int getYear()
 	int year = 1900 + newtime.tm_year;
 	return year;
 }
+int getHour()
+{
+	struct tm newtime;
+	time_t now = time(0);
+	localtime_s(&newtime, &now);
+	int hour = newtime.tm_hour;
+	return hour;
+}
+int getMin()
+{
+	struct tm newtime;
+	time_t now = time(0);
+	localtime_s(&newtime, &now);
+	int min = newtime.tm_min;
+	return min;
+}
+//Главное меню с выбором входа, регистрации или выхода из программы, отображает текущую дату
 void Chat::showMainMenu()
 {
 	char choice;
@@ -149,7 +171,8 @@ void Chat::showMainMenu()
 	_currentUser = nullptr;
 
 	std::cout << "\tГлавное Меню\n" << std::endl;
-	std::cout << "Дата: " << getDay() << "." << getMonth() << "." << getYear() << std::endl;;
+	std::cout << "Дата: " << getDay() << "." << getMonth() << "." << getYear() << std::endl;
+	std::cout << "Время: " << "(" << getHour() << ":" << getMin() << ")" << std::endl;
 	while(!_currentUser && _chatWork)
 	{ 
 		std::cout << "\n1 - Вход в чат\n2 - Регистрация пользователя\n3 - Выход\n" << std::endl;
@@ -175,7 +198,7 @@ void Chat::showMainMenu()
 			system("pause");
 			break;
 		default:
-			std::cout << "1, 2 или 3" << std::endl;
+			std::cout << "Введите 1, 2 или 3" << std::endl;
 			break;
 		}
 		
@@ -183,28 +206,13 @@ void Chat::showMainMenu()
 
 }
 
-int getHour()
-{
-	struct tm newtime;
-	time_t now = time(0);
-	localtime_s(&newtime, &now);
-	int hour = newtime.tm_hour;
-	return hour;
-}
-int getMin()
-{
-	struct tm newtime;
-	time_t now = time(0);
-	localtime_s(&newtime, &now);
-	int min = newtime.tm_min;
-	return min;
-}
+//Вывод в консоль сообщений для всех и для текущего пользователя
 void Chat::showChat()
 {
 	std::string from;
 	std::string to;
 
-	std::cout << "\t<Чат>\n" << std::endl;
+	std::cout << "\t< Чат >\n" << std::endl;
 
 	for (auto& message : _messages) 
 	{
@@ -222,43 +230,71 @@ void Chat::showChat()
 			}
 
 			std::cout << "Сообщение от " << from << " для " << to <<": " << std::endl;
-			std::cout <<"("<< getHour() << ":" << getMin()<<") " << "\"" << message.getText() << "\"" << std::endl;
+			std::cout << "\"" << message.getText() << "\"" << std::endl;
 		}
 	}
 }
-
-void Chat::showChatMenu()
+//Меню чата со всем функционалом, для пользователя Admin доступна функция посмотреть данные всех пользователей
+void Chat::showChatMenu() 
 {
 	char choice;
 
-	std::cout << "Пользователь: " << _currentUser->getUserName() << std::endl;
+	std::cout << "\nПользователь: " << _currentUser->getUserName() << std::endl;
 
 	while (_currentUser) 
 	{
-		std::cout << "\n1 - Показать сообщения\n2 - Написать сообщение\n3 - Показать всех пользователей\n4 - Выйти из чата\n" << std::endl;
-		
-		std::cin >> choice;
-
-		switch (choice) 
+		if (_currentUser->getUserName() == "Admin") //версия меню для админа
 		{
-		case ('1'):
-			showChat();
-			break;
-		case ('2'):
-			addMessage();
-			break;
-		case ('3'):
-			showAllUsers();
-			break;
-		case ('4'):
-			std::cout << "\tВыход\n" << std::endl;
-			_currentUser = nullptr;
-			break;
+			std::cout << "\n1 - Показать сообщения\n2 - Написать сообщение\n3 - Показать всех пользователей\n4 - (Admin) Показать данные всех пользователей\n5 - Выйти из чата\n" << std::endl;
+
+			std::cin >> choice;
+
+			switch (choice)
+			{
+			case ('1'):
+				showChat();
+				break;
+			case ('2'):
+				addMessage();
+				break;
+			case ('3'):
+				showAllUsers();
+				break;
+			case ('4'):
+				showAllUsersInfo();
+				break;
+			case ('5'):
+				std::cout << "\tВыход\n" << std::endl;
+				_currentUser = nullptr;
+				break;
+			}
 		}
-		
+		else //версия меню для обычного пользователя
+		{
+			std::cout << "\n1 - Показать сообщения\n2 - Написать сообщение\n3 - Показать всех пользователей\n4 - Выйти из чата\n" << std::endl;
+
+			std::cin >> choice;
+
+			switch (choice)
+			{
+			case ('1'):
+				showChat();
+				break;
+			case ('2'):
+				addMessage();
+				break;
+			case ('3'):
+				showAllUsers();
+				break;
+			case ('4'):
+				std::cout << "\tВыход\n" << std::endl;
+				_currentUser = nullptr;
+				break;
+			}
+		}
 	}
 }
-
+//Показывает имена всех пользователей, "<- Я" указывает на текущего пользователя
 void Chat::showAllUsers()
 {
 	std::cout << "\tПользователи в сети:" << std::endl;
@@ -268,12 +304,13 @@ void Chat::showAllUsers()
 		std::cout << user.getUserName();
 		if (user.getUserLogin() == _currentUser->getUserLogin()) 
 		{
-			std::cout << "<--";
+			std::cout << "<-- Я";
 		}
 		std::cout << std::endl;
 	}
 }
 
+//Функция позволяет написать сообщение конкретному пользователю или всем, сообщение добавляется в конец вектора messages
 void Chat::addMessage()
 {
 	std::string to;
@@ -299,4 +336,22 @@ void Chat::addMessage()
 		_messages.push_back(Message<std::string>(_currentUser->getUserLogin(), getUserByName(to)->getUserLogin(), text));
 	}
 }
+//Создает пользователя Admin
+void Chat::adminCreation()
+{
+	User user = User("admin", "admin", "Admin");
+	_users.push_back(user);
+}
+//Выводит в консоль данные всех пользователей
+void Chat::showAllUsersInfo()
+{
+	std::cout << "\tПользователи:" << std::endl;
 
+	for (auto& user : Chat::_users)
+	{
+		std::cout << "Логин: " << user.getUserLogin() << " / ";
+		std::cout << "Пароль: " << user.getUserPassword() << " / ";
+		std::cout << "Имя: "<<user.getUserName();
+		std::cout << std::endl;
+	}
+}

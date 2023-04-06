@@ -25,6 +25,7 @@ public:
 
 class Chat
 {
+protected:
 	bool _chatWork = false;
 	std::vector<User> _users;
 	std::vector<Message<std::string>> _messages;
@@ -46,6 +47,11 @@ public:
 	void showAllUsers(); //Показать список пользователей
 	void addMessage(); //Добавить сообщение
 
+	void adminCreation(); //Создание пользователя admin
+	void showAllUsersInfo(); //Посмотреть данные всех пользователей
+
 	std::shared_ptr<User>getCurrentUser() const { return _currentUser; }
 	
 };
+
+
