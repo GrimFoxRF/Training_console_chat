@@ -1,6 +1,7 @@
 #include <iostream>
 #include <Windows.h>
 #include "Chat.h"
+#include "Main.h"
 
 int main() 
 {
@@ -10,6 +11,7 @@ int main()
 	Chat chat; //Чат создан
 
 	chat.start(); 
+	chat.adminCreation();
 
 	while (chat.chatWork())
 	{
