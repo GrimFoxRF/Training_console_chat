@@ -2,38 +2,16 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include <exception>
 #include "User.h"
-
-//Исключения неверный логин и имя
-class loginException : public std::exception 
-{
-public:
-	const char* what() const noexcept override
-	{
-		return "ОШИБКА: логин занят";
-	}
-};
-class nameException : public std::exception
-{
-public:
-	const char* what() const noexcept override
-	{
-		return "ОШИБКА: имя занято";
-	}
-};
+#include "Message.h"
 
 class Chat
 {
 protected:
 	bool _chatWork = false;
 	std::vector<User> _users;
-	std::vector<Message<std::string>> _messages;
-	std::shared_ptr<User> _currentUser = nullptr;
-
-	std::shared_ptr<User> getUserByLogin(const std::string& login) const;
-	std::shared_ptr<User> getUserByName(const std::string& name) const;
-	
+	std::vector<Message> _messages;
+	std::shared_ptr<User> _currentUser = nullptr;	
 
 public:
 	void start();
@@ -47,11 +25,21 @@ public:
 	void showAllUsers(); //Показать список пользователей
 	void addMessage(); //Добавить сообщение
 
-	void adminCreation(); //Создание пользователя admin
+	std::shared_ptr<User> getUserByLogin(const std::string& login) const; //Проверка массива пользователей на совпадение логина
+	std::shared_ptr<User> getUserByName(const std::string& name) const;  //Проверка массива пользователей на совпадение имени
+
+
+	void adminCreation(); //Создание пользователя admin, если такого пользователя нет
 	void showAllUsersInfo(); //Посмотреть данные всех пользователей
 
 	std::shared_ptr<User>getCurrentUser() const { return _currentUser; }
-	
+
+	void loadUsersFromFile(); //Загрузка списка пользователей из файла
+	void saveUsersToFile() const; //Сохранение списка пользователей в файл
+
+	void loadMessageFromFile(); //Звгрузка списка сообщений из файла
+	void saveMessageToFile() const; //Сохранение сообщений в файл
+
 };
 
 
