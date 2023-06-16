@@ -1,6 +1,10 @@
 #include <iostream>
-#include <ctime>
+#include <fstream>
+#include <vector>
+#include <limits>
+#include <string>
 #include "Chat.h"
+#include "Utility.h"
 
 
 void Chat::start()
@@ -41,19 +45,22 @@ void Chat::showLoginMenu()
 	char choice;
 	std::string login;
 	std::string password;
+
 	while (menu)
 	{
 		std::cout << "\tВведите логин:\n" << std::endl;
-		std::cin.ignore();
-		getline(std::cin, login);
-		
+		std::cin >> login;
+
 		_currentUser = getUserByLogin(login);
 
 		if (_currentUser == nullptr)
 		{
 			std::cout << "\nНеправильно введен логин\n" << std::endl;
 			std::cout << "Нажмите любую кнопку для повторного ввода или \"0\" для выхода\n" << std::endl;
+			std::cin.clear();
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 			std::cin >> choice;
+
 			if (choice == '0')
 			{
 				menu = false;
@@ -63,26 +70,27 @@ void Chat::showLoginMenu()
 		else
 		{
 			std::cout << "\tВведите пароль:\n" << std::endl;
-			
 			std::cin >> password;
 
 			if (password != _currentUser->getUserPassword())
 			{
 				std::cout << "\nНеправильно введен пароль\n" << std::endl;
 				std::cout << "Нажмите любую кнопку для повторного ввода или \"0\" для выхода\n" << std::endl;
+				std::cin.clear();
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 				std::cin >> choice;
-			
+
 				if (choice == '0')
 				{
 					menu = false;
 					break;
 				}
+
 				_currentUser = nullptr;
 				break;
 			}
 			break;
 		}
-		
 	}
 }
 //Функция создания нового пользователя запрашивает придумать логин, пароль и имя пользователя и добавляе в конец вектора users
@@ -120,48 +128,8 @@ void Chat::showRegistrationMenu()
 		_users.push_back(user);
 		
 		menu = false;
+		break;
 	}
-}
-//функции для отображения даты в главном меню
-int getDay()
-{
-	struct tm newtime;
-	time_t now = time(0);
-	localtime_s(&newtime, &now);
-	int day = newtime.tm_mday;
-	return day;
-}
-int getMonth()
-{
-	struct tm newtime;
-	time_t now = time(0);
-	localtime_s(&newtime, &now);
-	int month = 1 + newtime.tm_mon;
-	return month;
-}
-int getYear()
-{
-	struct tm newtime;
-	time_t now = time(0);
-	localtime_s(&newtime, &now);
-	int year = 1900 + newtime.tm_year;
-	return year;
-}
-int getHour()
-{
-	struct tm newtime;
-	time_t now = time(0);
-	localtime_s(&newtime, &now);
-	int hour = newtime.tm_hour;
-	return hour;
-}
-int getMin()
-{
-	struct tm newtime;
-	time_t now = time(0);
-	localtime_s(&newtime, &now);
-	int min = newtime.tm_min;
-	return min;
 }
 //Главное меню с выбором входа, регистрации или выхода из программы, отображает текущую дату
 void Chat::showMainMenu()
@@ -214,24 +182,26 @@ void Chat::showChat()
 
 	std::cout << "\t< Чат >\n" << std::endl;
 
-	for (auto& message : _messages) 
+	for (const auto& message : _messages) 
 	{
-		if (_currentUser->getUserLogin() == message.getFrom() || _currentUser->getUserLogin() == message.getTo() || message.getTo() == "all") 
+		if (_currentUser->getUserLogin() != message.getFrom() && _currentUser->getUserLogin() != message.getTo() && message.getTo() != "all")
 		{
-			from = (_currentUser->getUserLogin() == message.getFrom() ? "меня" : getUserByLogin(message.getFrom())->getUserName());
-
-			if (message.getTo() == "all") 
-			{ 
-				to = "всех"; 
-			}
-			else 
-			{ 
-				to = _currentUser->getUserLogin() == message.getFrom() ? "мне" : getUserByLogin(message.getTo())->getUserName(); 
-			}
-
-			std::cout << "Сообщение от " << from << " для " << to <<": " << std::endl;
-			std::cout << "\"" << message.getText() << "\"" << std::endl;
+			continue; // Пропустить сообщение, если текущий пользователь не является отправителем, получателем или сообщение не отправлено всем
 		}
+
+		from = (_currentUser->getUserLogin() == message.getFrom()) ? "меня" : getUserByLogin(message.getFrom())->getUserName();
+
+		if (message.getTo() == "all") 
+		{ 
+			to = "всех"; 
+		}
+		else 
+		{ 
+			to = (_currentUser->getUserLogin() == message.getTo()) ? "мне" : getUserByLogin(message.getTo())->getUserName(); 
+		}
+
+		std::cout << "Сообщение от " << from << " для " << to << ": " << std::endl;
+		std::cout << "\"" << message.getText() << "\"" << std::endl;
 	}
 }
 //Меню чата со всем функционалом, для пользователя Admin доступна функция посмотреть данные всех пользователей
@@ -329,18 +299,20 @@ void Chat::addMessage()
 	}
 	if (to == "all") 
 	{
-		_messages.push_back(Message<std::string>(_currentUser->getUserLogin(), "all", text));
+		_messages.push_back(Message(_currentUser->getUserLogin(), "all", text));
 	}
 	else 
 	{
-		_messages.push_back(Message<std::string>(_currentUser->getUserLogin(), getUserByName(to)->getUserLogin(), text));
+		_messages.push_back(Message(_currentUser->getUserLogin(), getUserByName(to)->getUserLogin(), text));
 	}
 }
 //Создает пользователя Admin
 void Chat::adminCreation()
 {
-	User user = User("admin", "admin", "Admin");
-	_users.push_back(user);
+	if (!getUserByLogin("admin")) {
+		User user = User("admin", "admin", "Admin");
+		_users.push_back(user);
+	}
 }
 //Выводит в консоль данные всех пользователей
 void Chat::showAllUsersInfo()
@@ -354,4 +326,72 @@ void Chat::showAllUsersInfo()
 		std::cout << "Имя: "<<user.getUserName();
 		std::cout << std::endl;
 	}
+}
+//Загрузка списка пользователей из файла
+void Chat::loadUsersFromFile()
+{
+	std::ifstream userFileRead("userFile.txt", std::ios::in | std::ios::binary);
+	if (userFileRead.is_open()) {
+		std::string login, password, name;
+		while (std::getline(userFileRead, login) && std::getline(userFileRead, password) && std::getline(userFileRead, name)) {
+			User user(login, password, name);
+			_users.emplace_back(user);
+		}
+		userFileRead.close();
+	}
+	else {
+		std::cout << "Не удалось открыть userFile.txt" << std::endl;
+	}
+	SetFilePermissions("userFile.txt");
+}
+//Сохранение списка пользователей в файл
+void Chat::saveUsersToFile() const
+{
+	std::ofstream userFileWrite("userFile.txt", std::ios::out | std::ios::binary);
+	if (userFileWrite.is_open()) {
+		for (const auto& user : _users) {
+			userFileWrite << user.getUserLogin() << std::endl;
+			userFileWrite << user.getUserPassword() << std::endl;
+			userFileWrite << user.getUserName() << std::endl;
+		}
+		userFileWrite.close();
+	}
+	else {
+		std::cout << "Не удалось открыть userFile.txt для записи" << std::endl;
+	}
+	SetFilePermissions("userFile.txt");
+}
+//Звгрузка списка сообщений из файла
+void Chat::loadMessageFromFile()
+{
+	std::ifstream messageFileRead("messageFile.txt", std::ios::in | std::ios::binary);
+	if (messageFileRead.is_open()) {
+		std::string from, to, text;
+		while (std::getline(messageFileRead, from) && std::getline(messageFileRead, to) && std::getline(messageFileRead, text)) {
+			Message message(from, to, text);
+			_messages.emplace_back(message);
+		}
+		messageFileRead.close();
+	}
+	else {
+		std::cout << "Не удалось открыть messageFile.txt" << std::endl;
+	}
+	SetFilePermissions("messageFile.txt");
+}
+//Сохранение сообщений в файл
+void Chat::saveMessageToFile() const
+{
+	std::ofstream messageFileWrite("messageFile.txt", std::ios::out | std::ios::binary);
+	if (messageFileWrite.is_open()) {
+		for (const auto& message : _messages) {
+			messageFileWrite << message.getFrom() << std::endl;
+			messageFileWrite << message.getTo() << std::endl;
+			messageFileWrite << message.getText() << std::endl;
+		}
+		messageFileWrite.close();
+	}
+	else {
+		std::cout << "Не удалось открыть messageFile.txt для записи" << std::endl;
+	}
+	SetFilePermissions("messageFile.txt");
 }
