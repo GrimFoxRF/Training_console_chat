@@ -15,7 +15,7 @@ class HashTable {
 
     // Хеш-функция методом умножения
     int hash(const std::string& key) {
-        const double A = 0.618033;  // Константа, близкая к золотому сечению
+        const double A = 0.618033;
         double hashValue = 0;
 
         for (char ch : key) {
