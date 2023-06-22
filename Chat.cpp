@@ -201,7 +201,7 @@ void Chat::showChat()
 		}
 
 		std::cout << "Сообщение от " << from << " для " << to << ": " << std::endl;
-		std::cout << "\"" << message.getText() << "\"" << std::endl;
+		std::cout << "\"" << "[" << message.getTime() << "] " << message.getText() << "\"" << std::endl;
 	}
 }
 //Меню чата со всем функционалом, для пользователя Admin доступна функция посмотреть данные всех пользователей
@@ -285,6 +285,7 @@ void Chat::addMessage()
 {
 	std::string to;
 	std::string text;
+	std::string timeCurr = getCurrentTime();
 
 	std::cout << "\nВведите имя пользователя или all - отпрвить сообщение Всем:\n" << std::endl;
 	std::cin >> to;
@@ -299,11 +300,11 @@ void Chat::addMessage()
 	}
 	if (to == "all") 
 	{
-		_messages.push_back(Message(_currentUser->getUserLogin(), "all", text));
+		_messages.push_back(Message(_currentUser->getUserLogin(), "all", timeCurr, text));
 	}
 	else 
 	{
-		_messages.push_back(Message(_currentUser->getUserLogin(), getUserByName(to)->getUserLogin(), text));
+		_messages.push_back(Message(_currentUser->getUserLogin(), getUserByName(to)->getUserLogin(), timeCurr, text));
 	}
 }
 //Создает пользователя Admin
@@ -366,9 +367,9 @@ void Chat::loadMessageFromFile()
 {
 	std::ifstream messageFileRead("messageFile.txt", std::ios::in | std::ios::binary);
 	if (messageFileRead.is_open()) {
-		std::string from, to, text;
-		while (std::getline(messageFileRead, from) && std::getline(messageFileRead, to) && std::getline(messageFileRead, text)) {
-			Message message(from, to, text);
+		std::string from, to, timeCurr, text;
+		while (std::getline(messageFileRead, from) && std::getline(messageFileRead, to) && std::getline(messageFileRead, timeCurr) && std::getline(messageFileRead, text)) {
+			Message message(from, to, timeCurr, text);
 			_messages.emplace_back(message);
 		}
 		messageFileRead.close();
@@ -386,6 +387,7 @@ void Chat::saveMessageToFile() const
 		for (const auto& message : _messages) {
 			messageFileWrite << message.getFrom() << std::endl;
 			messageFileWrite << message.getTo() << std::endl;
+			messageFileWrite << message.getTime() << std::endl;
 			messageFileWrite << message.getText() << std::endl;
 		}
 		messageFileWrite.close();
@@ -395,3 +397,4 @@ void Chat::saveMessageToFile() const
 	}
 	SetFilePermissions("messageFile.txt");
 }
+

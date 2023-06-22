@@ -1,6 +1,7 @@
 //Вспомогательные методы
 #pragma once
 #include <exception>
+#include <string>
 
 //Исключения неверный логин и имя
 class loginException : public std::exception
@@ -23,6 +24,7 @@ public:
 void SetFilePermissions(const std::string& filePath); //Установка разрешения доступа к файлам
 
 //Служебные методы для получения даты и времени системы
+std::string getCurrentTime();
 int getDay();
 int getMonth();
 int getYear();

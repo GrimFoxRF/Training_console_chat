@@ -1,6 +1,8 @@
 //Реализация вспомогательных методов
 #include <iostream>
 #include <ctime>
+#include <iomanip>
+#include <sstream>
 #include <string>
 #include <fstream>
 #include <filesystem> //требуется С++17 и выше
@@ -20,6 +22,26 @@ void SetFilePermissions(const std::string& filePath)
 }
 
 //функции для отображения даты в главном меню
+std::string getCurrentTime() 
+{
+	struct tm newtime;
+	time_t now = time(0);
+	localtime_s(&newtime, &now);
+
+	int day = newtime.tm_mday;
+	int month = 1 + newtime.tm_mon;
+	int year = 1900 + newtime.tm_year;
+	int hour = newtime.tm_hour;
+	int min = newtime.tm_min;
+
+	std::ostringstream oss;
+	oss << std::setfill('0') << std::setw(2) << day << "." << std::setw(2) << month << "." << year << " "
+		<< std::setw(2) << hour << ":" << std::setw(2) << min;
+
+	return oss.str();
+}
+
+
 int getDay()
 {
 	struct tm newtime;
