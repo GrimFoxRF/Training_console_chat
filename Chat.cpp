@@ -1,11 +1,17 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <algorithm>
 #include <limits>
 #include <string>
 #include "Chat.h"
 #include "Utility.h"
+#include "NetworkServer.h"
 
+
+#if defined(max)
+#undef max
+#endif
 
 void Chat::start()
 {
@@ -83,6 +89,7 @@ void Chat::showLoginMenu()
 				if (choice == '0')
 				{
 					menu = false;
+					_currentUser = nullptr;
 					break;
 				}
 
@@ -127,6 +134,8 @@ void Chat::showRegistrationMenu()
 		User user = User(login, password, name);
 		_users.push_back(user);
 		
+		saveUsersToFile();
+
 		menu = false;
 		break;
 	}
@@ -139,8 +148,7 @@ void Chat::showMainMenu()
 	_currentUser = nullptr;
 
 	std::cout << "\tГлавное Меню\n" << std::endl;
-	std::cout << "Дата: " << getDay() << "." << getMonth() << "." << getYear() << std::endl;
-	std::cout << "Время: " << "(" << getHour() << ":" << getMin() << ")" << std::endl;
+	std::cout << "[" << getCurrentTime() << "]" << std::endl; //Дата и время в главном меню
 	while(!_currentUser && _chatWork)
 	{ 
 		std::cout << "\n1 - Вход в чат\n2 - Регистрация пользователя\n3 - Выход\n" << std::endl;
@@ -208,6 +216,8 @@ void Chat::showChat()
 void Chat::showChatMenu() 
 {
 	char choice;
+
+	//client.receiveUpdatedUserFile(clientSocket_, "userFile.txt");
 
 	std::cout << "\nПользователь: " << _currentUser->getUserName() << std::endl;
 

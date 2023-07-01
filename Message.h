@@ -1,3 +1,4 @@
+//Класс сообщений
 #pragma once
 #include <string>
 
@@ -16,5 +17,6 @@ public:
 	const std::string& getTo() const { return _to; }
 	const std::string& getTime() const { return _currentTime; }
 	const std::string& getText() const { return _text; }
+
 };
 

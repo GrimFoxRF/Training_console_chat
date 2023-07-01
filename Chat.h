@@ -1,9 +1,13 @@
+//Основной функционал чата
 #pragma once
 #include <string>
 #include <vector>
 #include <memory>
 #include "User.h"
 #include "Message.h"
+#include "NetworkServer.h"
+#include "NetworkClient.h"
+
 
 class Chat
 {
@@ -14,6 +18,7 @@ protected:
 	std::shared_ptr<User> _currentUser = nullptr;	
 
 public:
+
 	void start();
 	bool chatWork() const;
 	

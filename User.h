@@ -1,3 +1,4 @@
+//Класс пользователей
 #pragma once
 #include <string>
 

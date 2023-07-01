@@ -1,3 +1,4 @@
+//Хэш-функция, пока не используется в программе
 #pragma once
 #include <vector>
 #include <string>
